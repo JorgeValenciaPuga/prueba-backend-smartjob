@@ -4,10 +4,10 @@ import com.smartjob.creacionusuarios.domain.Phone;
 import com.smartjob.creacionusuarios.domain.User;
 import com.smartjob.creacionusuarios.domain.UserRequestDTO;
 import com.smartjob.creacionusuarios.domain.UserResponseDTO;
+import com.smartjob.creacionusuarios.exception.UserException;
 import com.smartjob.creacionusuarios.repository.UserRepository;
 import com.smartjob.creacionusuarios.security.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,9 +26,6 @@ public class UserService {
 
     @Autowired
     JwtService jwtService;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
     public UserService(UserRepository userRepository, ValidatorService validatorService) {
         this.userRepository = userRepository;
@@ -67,7 +64,8 @@ public class UserService {
             userRepository.save(user);
 
             return new UserResponseDTO(user.getId(),user.getName(),user.getEmail(),user.getCreated(),LocalDateTime.now(),LocalDateTime.now(),token,true);
-        }catch(Exception e){
+        }catch(UserException e){
+            System.out.println("Error:" + e);
             throw e;
         }
         
@@ -76,7 +74,4 @@ public class UserService {
         this.jwtService = jwtService;
     }
 
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
 }
